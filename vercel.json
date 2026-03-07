@@ -1,4 +1,5 @@
 {
+  "outputDirectory": ".",
   "env": {
     "REACT_APP_API_BASE": "https://risk-atlas-api.onrender.com"
   },
