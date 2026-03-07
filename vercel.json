@@ -1,5 +1,4 @@
 {
-  "buildCommand": "npm run build || echo 'Static site - no build needed'",
   "env": {
     "REACT_APP_API_BASE": "https://risk-atlas-api.onrender.com"
   },
