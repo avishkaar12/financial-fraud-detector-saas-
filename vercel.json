@@ -1,7 +1,6 @@
 {
   "buildCommand": "echo 'Vercel deployment for static site'",
   "outputDirectory": "website",
-  "framework": "Static Site",
   "env": {
     "REACT_APP_API_BASE": "https://risk-atlas-api.onrender.com"
   },
