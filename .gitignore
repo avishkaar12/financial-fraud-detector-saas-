@@ -4,12 +4,23 @@ venv/
 # Python cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # Environment variables
 .env
+.env.render
+.env.local
 
 # Jupyter/IPython
 .ipynb_checkpoints/
 
 # VS Code settings (optional)
 .vscode/
+
+# model artifacts
+*.pkl
+*.csv
+
+# Local secrets
+.firebase.local
+

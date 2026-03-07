@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+pandas
+numpy
+scikit-learn
+xgboost
+python-dotenv
+shap
+joblib
+imbalanced-learn
+python-multipart
+pytest
+psycopg2-binary
+firebase-admin
+reportlab

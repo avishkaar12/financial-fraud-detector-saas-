@@ -1,0 +1,144 @@
+DSA WITH PYTHON PROJECT DOCUMENTATION
+
+Project Title:
+Risk Atlas - Financial Fraud Detector SaaS
+
+Team/Author:
+Avishkaar Bhor
+
+Document Version:
+Updated implementation snapshot (March 5, 2026)
+
+1. Problem Statement
+Fraud monitoring needs fast detection, explainability, and clear operations workflows. Manual review is slow and inconsistent. This project delivers an end-to-end fraud detection product where users upload transaction CSV files, get fraud scores and explanations, track alerts, and review analytics in an interactive dashboard.
+
+2. Objectives
+- Build a production-style fraud detection backend in Python.
+- Use DSA concepts in schema handling, filtering, ranking, and aggregation.
+- Train and serve an ML model for fraud probability prediction.
+- Provide explainability for predictions (SHAP + rule signals).
+- Store transactions, model logs, and alerts in PostgreSQL.
+- Add user authentication and multi-dashboard frontend workflows.
+
+3. Tech Stack
+- Language: Python, JavaScript
+- Backend: FastAPI
+- Database: PostgreSQL (Neon-compatible via `DATABASE_URL`)
+- Auth: Firebase Authentication (ID token verification on backend)
+- ML: XGBoost, SHAP, scikit-learn, pandas, numpy
+- PDF Reports: reportlab
+- Frontend: HTML, CSS, JavaScript (React via ESM modules)
+- Testing: pytest
+
+4. Dataset and Input Format
+- Training dataset: `backend/training/creditcard.csv`
+- Sample inference datasets:
+  - `sample_transactions.csv`
+  - `sample_transactions_strong.csv`
+- Upload endpoint: `POST /detect`
+- Expected normalized fields:
+  `amount, transaction_hour, foreign_transaction, location_mismatch, device_trust_score, velocity_last_24h, cardholder_age, merchant_category`
+
+5. DSA Concepts Used (Python + DSA Requirement)
+A. Hash Maps / Dictionaries
+- Header alias normalization and feature mapping use dictionary lookups (average O(1)).
+- Risk signal accumulation and analytics category counters use dictionary aggregation.
+
+B. Arrays / Lists
+- Deterministic model feature ordering for stable inference input vectors.
+- Batch transaction processing loops through rows in linear order.
+
+C. Sorting and Ranking
+- SHAP contribution values are ranked by absolute magnitude for top factors.
+- Alert and risk output ordering supports analyst triage.
+
+D. Grouping / Aggregation
+- Fraud analytics grouped by day, severity, and merchant category.
+- Dashboard metrics summarize totals and rates efficiently.
+
+E. Filtering / Search
+- Investigator queue supports status and keyword-based filtering.
+- Severity-based alert filtering for SOC operations.
+
+Complexity Notes:
+- Upload processing is O(n) over rows.
+- Schema checks are O(m) over columns with O(1) average lookup.
+- Grouped analytics are O(n) for scans plus grouping overhead.
+
+6. ML and Risk Scoring
+Model:
+- XGBoost binary classifier
+
+Training/Serving Improvements:
+- Class imbalance handling (`scale_pos_weight`)
+- Threshold loaded from metadata (`model_metadata.json`, fallback 0.5)
+- SHAP explanations generated for interpretability
+
+Hybrid Risk Strategy:
+- Final fraud probability blends:
+  - model probability (XGBoost)
+  - rule-based risk probability (`risk_engine`)
+- Additional outputs:
+  - `risk_band`
+  - `signals`
+
+Artifacts:
+- `backend/fraud_model.pkl`
+- `backend/model_columns.json`
+- `backend/model_metadata.json`
+
+7. System Architecture
+CSV Upload -> FastAPI `/detect` -> preprocessing + schema normalization -> XGBoost inference + SHAP + rule engine -> persistence to PostgreSQL (`transactions`, `model_logs`, `alerts`) -> analytics/alerts/report endpoints -> interactive frontend dashboards.
+
+8. Current Product Features
+- Secure sign in/sign up flow (Firebase Auth UI + backend token support)
+- Fraud detection from CSV uploads
+- Alert generation and investigator workflow status handling
+- Analytics dashboards (trend, severity, distribution, operational KPIs)
+- Activity logs and multi-view UI (SOC, Investigator, Model Ops, Executive)
+- PDF export for fraud transactions (`/download/fraud-pdf`)
+- Theme settings (light/dark), compact mode, reduced motion, sound toggle
+- Responsive design and branded logo integration
+
+9. API Endpoints
+- `GET /health`
+- `POST /detect`
+- `GET /alerts`
+- `GET /analytics`
+- `GET /download`
+- `GET /download/fraud-pdf`
+
+10. Testing Status
+- Test files:
+  - `backend/tests/test_api.py`
+  - `backend/tests/test_preprocessing.py`
+- Current status: backend test suite passes (`4 passed`)
+
+11. Deployment and Environment
+Environment configuration uses:
+- `DATABASE_URL` (PostgreSQL connection string)
+- `DB_SSLMODE`
+- `AUTH_REQUIRED`
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+
+Deployment target approach:
+- Backend on Render
+- PostgreSQL on Neon (free tier possible)
+- Firebase Authentication for user identity
+
+12. Competition Value Proposition
+- Not only model prediction: includes explainability, rule signals, case workflow, and reporting.
+- Real SaaS-style architecture with auth + persistent storage + analyst UX.
+- Clear DSA usage in production-relevant data flows (mapping, grouping, sorting, filtering).
+
+13. References
+- Kaggle Credit Card Fraud Dataset: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+- XGBoost docs: https://xgboost.readthedocs.io/
+- scikit-learn metrics docs: https://scikit-learn.org/stable/modules/model_evaluation.html
+- SHAP docs: https://shap.readthedocs.io/
+- FastAPI docs: https://fastapi.tiangolo.com/
+- Firebase docs: https://firebase.google.com/docs
+- Neon docs: https://neon.tech/docs
+
+14. Conclusion
+This project satisfies Python + DSA expectations while delivering a practical fraud intelligence product. It combines machine learning, explainability, and strong operational UX into a competition-ready implementation that is deployable on free-tier cloud services.
