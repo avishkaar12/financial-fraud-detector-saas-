@@ -19,6 +19,7 @@ __pycache__/
 
 # model artifacts
 *.pkl
+!backend/fraud_model.pkl
 *.csv
 
 # Local secrets
